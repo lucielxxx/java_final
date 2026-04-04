@@ -1,3 +1,40 @@
-spring:
-  application:
-    name: biblioteca
+
+
+
+  server:
+    servlet:
+      context-path: /api/v1
+    port: 8080
+
+  spring:
+    application:
+      name: biblioteca
+
+    datasource:
+      url: jdbc:postgresql://localhost:5432/biblioteca?currentSchema=schema_biblioteca
+      username: drako
+      password: Quadcore9650*
+      driver-class-name: org.postgresql.Driver
+      hikari:
+#        jdbc-url:
+        maximum-pool-size: 10
+        connection-timeout: 30000
+        max-lifetime:  18000
+
+    jpa:
+        hibernate:
+          ddl-auto: update
+        show-sql: true
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+            format_sql: true
+        open-in-view: false
+
+    devtools:
+        restart:
+          enabled: true
+        livereload:
+          enabled: true
+
+
