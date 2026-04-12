@@ -2,6 +2,8 @@ package idat.com.biblioteca.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 @Table(name = "Libro")
@@ -18,19 +20,21 @@ public class Libro {
     @Column(name = "idLibro")
     private Long idLibro;
 
-    @Column(name = "nombreLibro", nullable = false,length = 50)
-    private String mombreLibro;
+    @Column(name = "nombreLibro", nullable = false,length = 50, unique = true)
+    private String nombreLibro;
 
-    @Column(name = "autor", nullable = false , length = 50)
+    @Column(name = "autor", nullable = false , length = 50, unique = true)
     private String autor;
 
     @Column(name = "estado" , nullable = false)
     private Boolean estado;
 
-    @Column(name = "fechaDeCreacion" , nullable = false)
+    @Column(name = "fechaDeCreacion" , nullable = false, updatable = false)
+    @CreationTimestamp
     private LocalDateTime fechaDeCreacion;
 
     @Column(name = "fechaDeUltimaActualizacion" , nullable = false)
+    @UpdateTimestamp
     private LocalDateTime fechaDeUltimaActualizacion;
 
 
