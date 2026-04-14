@@ -20,5 +20,6 @@ public class LibroRequestDto {
     @Size(max = 50 , message = " no puede tener mas de  50 caracteres")
     private String autor;
 
+    private Boolean estado; // Añadimos esto para permitir el cambio manual
 
 }

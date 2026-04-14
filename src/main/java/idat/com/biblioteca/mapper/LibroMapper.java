@@ -18,7 +18,7 @@ public interface LibroMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "idLibro", ignore = true)
-    @Mapping(target = "estado", ignore = true)
+    //@Mapping(target = "estado", ignore = true)
     @Mapping(target = "fechaDeCreacion", ignore = true)
     @Mapping(target = "fechaDeUltimaActualizacion", ignore = true)
     void actualizarFromRequest(LibroRequestDto libroRequestDto, @MappingTarget Libro libro);

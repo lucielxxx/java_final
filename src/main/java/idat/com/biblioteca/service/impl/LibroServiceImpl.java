@@ -39,11 +39,22 @@ public class LibroServiceImpl implements LibroService {
     @Transactional
     @Override
     public LibroResponseDto actualzar(Long idLibro, LibroRequestDto libroRequestDto) {
-        Libro libro = libroRepository.findById(idLibro).orElseThrow (()-> new RuntimeException("Error al buscar libro"));
+        // 1. Buscar el libro existente o lanzar excepción
+        Libro libro = libroRepository.findById(idLibro)
+                .orElseThrow(() -> new RuntimeException("Error al buscar libro"));
+
+        // Mapeo automático de nombre y autor
         libroMapper.actualizarFromRequest(libroRequestDto, libro);
+
+        // Validación manual del estado (por si el mapper tiene conflictos con booleanos)
+        if (libroRequestDto.getEstado() != null) {
+            libro.setEstado(libroRequestDto.getEstado());
+        }
+
         Libro libroActualizado = libroRepository.save(libro);
         libroRepository.flush();
         entityManager.refresh(libroActualizado);
+
         return libroMapper.toResponseDto(libroActualizado);
     }
 
@@ -72,4 +83,23 @@ public class LibroServiceImpl implements LibroService {
         libroRepository.deleteById(idLibro);
 
     }
+
+    @Override
+    @Transactional
+    public void eliminarLogico(Long idLibro) {
+        // 1. Buscar el libro
+        Libro libro = libroRepository.findById(idLibro)
+                .orElseThrow(() -> new RuntimeException("No se encontró el libro con ID: " + idLibro));
+
+        // 2. Cambiar el estado a false (Eliminado lógico)
+        libro.setEstado(false);
+
+        // 3. Guardar cambios
+        // Al guardar, @UpdateTimestamp actualizará automáticamente fechaDeUltimaActualizacion
+        libroRepository.save(libro);
+
+        log.info("Libro con ID {} ha sido marcado como inactivo (eliminado lógico)", idLibro);
+    }
+
+
 }

@@ -32,4 +32,18 @@ public class libroController {
         return  ResponseEntity.status(HttpStatus.CREATED).body(libroService.crear(libroRequestDto));
     }
 
+    @PutMapping("/{idLibro}")
+    public ResponseEntity<LibroResponseDto> actualizar(
+            @PathVariable Long idLibro,
+            @Valid @RequestBody LibroRequestDto libroRequestDto) {
+        return ResponseEntity.ok(libroService.actualzar(idLibro, libroRequestDto));
+    }
+
+    // En libroController.java
+
+    @DeleteMapping("/{idLibro}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long idLibro) {
+        libroService.eliminarLogico(idLibro);
+        return ResponseEntity.noContent().build();
+    }
 }

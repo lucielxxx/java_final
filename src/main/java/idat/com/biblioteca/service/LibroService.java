@@ -15,6 +15,13 @@ public interface  LibroService {
 
 
     List<LibroResponseDto> ListarLibros();
+
     LibroResponseDto listarLibroPorId(Long idLibro);
+
     void borrar(Long idLibro);
+
+    // En LibroService.java
+    void eliminarLogico(Long idLibro);
+
 }
+
