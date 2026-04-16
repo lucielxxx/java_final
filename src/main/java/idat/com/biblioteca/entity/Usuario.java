@@ -19,6 +19,7 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_id_usuario")
     @SequenceGenerator(name = "seq_id_usuario", sequenceName = "seq_id_usuario", allocationSize = 1)
+    @Column(name = "id_usuario")
     private Long idUsuario;
 
     @Column(nullable = false)
@@ -27,26 +28,26 @@ public class Usuario {
     @Column(nullable = false, length = 8, unique = true)
     private String dni;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "nombres", nullable = false, length = 100)
     private String nombres;
 
-    @Column(nullable = false)
+    @Column(name = "estado", nullable = false)
     private Boolean estado;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "nombre_usuario", nullable = false, unique = true)
     private String nombreUsuario;
 
-    @Column(nullable = false)
+    @Column(name = "contrasena_usuario", nullable = false)
     private String contrasenaUsuario;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "fecha_de_creacion", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime fechaDeCreacion;
 
-    @Column(nullable = false)
+    @Column(name = "fecha_de_ultima_actualizacion", nullable = false)
     @UpdateTimestamp
     private LocalDateTime fechaDeUltimaActualizacion;
 }

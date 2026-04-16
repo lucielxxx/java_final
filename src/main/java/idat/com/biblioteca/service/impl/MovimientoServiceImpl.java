@@ -4,9 +4,11 @@ import idat.com.biblioteca.dto.request.MovimientoRequestDto;
 import idat.com.biblioteca.dto.response.MovimientoResponseDto;
 import idat.com.biblioteca.entity.Libro;
 import idat.com.biblioteca.entity.Movimiento;
+import idat.com.biblioteca.entity.Usuario;
 import idat.com.biblioteca.mapper.MovimientoMapper;
 import idat.com.biblioteca.repository.LibroRepository;
 import idat.com.biblioteca.repository.MovimientoRepository;
+import idat.com.biblioteca.repository.UsuarioRepository;
 import idat.com.biblioteca.service.MovimientoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ public class MovimientoServiceImpl implements MovimientoService {
 
     private final MovimientoRepository movimientoRepository;
     private final LibroRepository libroRepository;
+    private final UsuarioRepository usuarioRepository;
     private final MovimientoMapper movimientoMapper;
 
     @Override
@@ -27,7 +30,11 @@ public class MovimientoServiceImpl implements MovimientoService {
         Libro libro = libroRepository.findById(dto.getIdLibro())
                 .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
 
-        // 2. Lógica de cambio de estado del libro
+        // 2. Validar que el usuario existe
+        Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // 3. Lógica de cambio de estado del libro
         if (dto.getTipoSolicitud() == 1) { // Pedir prestado
             if (!libro.getEstado()) {
                 throw new RuntimeException("El libro ya se encuentra prestado");
@@ -37,11 +44,13 @@ public class MovimientoServiceImpl implements MovimientoService {
             libro.setEstado(true); // Cambia a disponible
         }
 
-        // 3. Guardar el estado actualizado del libro
+        // 4. Guardar el estado actualizado del libro
         libroRepository.save(libro);
 
-        // 4. Registrar el movimiento
+        // 5. Registrar el movimiento
         Movimiento movimiento = movimientoMapper.toEntity(dto);
+        movimiento.setLibro(libro);
+        movimiento.setUsuario(usuario);
         return movimientoMapper.toResponseDto(movimientoRepository.save(movimiento));
     }
 

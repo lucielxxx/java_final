@@ -9,8 +9,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface MovimientoMapper {
 
-    @Mapping(target = "libro.idLibro", source = "idLibro")
-    @Mapping(target = "usuario.idUsuario", source = "idUsuario")
     @Mapping(target = "idMovimiento", ignore = true)
     @Mapping(target = "fechaDeCreacion", ignore = true)
     @Mapping(target = "fechaDeUltimaActualizacion", ignore = true)
