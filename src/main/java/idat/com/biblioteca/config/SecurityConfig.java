@@ -2,6 +2,11 @@ package idat.com.biblioteca.config;
 
 import idat.com.biblioteca.exepctions.JwtAuthenticationEntryPoint;
 import idat.com.biblioteca.security.JwtAuthenticationFilter;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,26 +42,20 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .authorizeHttpRequests(authz -> authz
-                        // 1. Endpoints públicos (Login y Registro)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
+                        // Rutas de Swagger permitidas
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
-                        // 2. Reglas para LIBROS
-                        // Listar libros: accesible para admin y user
                         .requestMatchers(HttpMethod.GET, "/libros/**").hasAnyAuthority("admin", "user")
-                        // Crear, Editar, Borrar libros: SOLO admin
                         .requestMatchers(HttpMethod.POST, "/libros/**").hasAuthority("admin")
                         .requestMatchers(HttpMethod.PUT, "/libros/**").hasAuthority("admin")
                         .requestMatchers(HttpMethod.DELETE, "/libros/**").hasAuthority("admin")
 
-                        // 3. Reglas para USUARIOS
-                        // Gestión de usuarios: SOLO admin
                         .requestMatchers(HttpMethod.POST, "/usuarios/**").hasAuthority("admin")
                         .requestMatchers(HttpMethod.PUT, "/usuarios/**").hasAuthority("admin")
                         .requestMatchers(HttpMethod.DELETE, "/usuarios/**").hasAuthority("admin")
 
-                        // 4. Reglas para MOVIMIENTOS
-                        // Préstamos y devoluciones: accesible para admin y user
                         .requestMatchers("/movimientos/**").hasAnyAuthority("admin", "user")
 
                         .anyRequest().authenticated()
@@ -67,9 +66,31 @@ public class SecurityConfig {
     }
 
     @Bean
+    public OpenAPI customOpenAPI() {
+        final String securitySchemeName = "bearerAuth";
+        return new OpenAPI()
+                .info(new Info()
+                        .title("API Biblioteca Caral")
+                        .version("1.0")
+                        .description("Sistema de gestión de libros y préstamos.\n\n" +
+                                "Integrantes:\n" +
+                                "- Karin Palacios Quinde\n" +
+                                "- Marco Antonio Yana Quispe\n" +
+                                "- Moises Aaron De La Cruz Del Aguila\n" +
+                                "- Alexander"))
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .components(new Components()
+                        .addSecuritySchemes(securitySchemeName,
+                                new SecurityScheme()
+                                        .name(securitySchemeName)
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")));
+    }
+
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Permitimos cualquier origen para pruebas (en producción se restringe)
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
